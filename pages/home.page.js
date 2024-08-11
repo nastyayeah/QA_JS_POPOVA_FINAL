@@ -1,66 +1,56 @@
 import { it } from 'node:test'
 import PlaywrightDevPage from './base.page'
+import HeaderComponent from './components/header.component'
 
 export default class HomePage extends PlaywrightDevPage {
   constructor(page) {
     super(page)
-    this.addToCartBackpackBtn = '#add-to-cart-sauce-labs-backpack'
-    this.addToCartBikeLightBtn = '#add-to-cart-sauce-labs-bike-light'
-    this.addToCartTShirtBtn = '#add-to-cart-sauce-labs-bolt-t-shirt'
-    this.removeFromCartBackpackBtn = '#remove-sauce-labs-backpack'
-    this.removeFromCartBikeLightBtn = '#remove-sauce-labs-bike-light'
-    this.removeFromCartTShirtBtn = '#remove-sauce-labs-bolt-t-shirt'
-    this.cartButton = '.shopping_cart_link'
-    this.cartBadge = '.shopping_cart_badge'
-    this.backpackLink = '#item_4_title_link'
-    this.bikeLightLink = '#item_0_title_link'
-    this.tShirtLink = '#item_1_title_link'
-    this.backpackPrice = `//div[text()='29.99']`
+    this.header = new HeaderComponent(page)
+    this.homePageUrl = this.baseUrl + '/inventory.html'
+
+    // this.addToCartBackpackBtn = '#add-to-cart-sauce-labs-backpack'
+    // this.addToCartBikeLightBtn = '#add-to-cart-sauce-labs-bike-light'
+    // this.addToCartTShirtBtn = '#add-to-cart-sauce-labs-bolt-t-shirt'
+    // this.removeFromCartBackpackBtn = '#remove-sauce-labs-backpack'
+    // this.removeFromCartBikeLightBtn = '#remove-sauce-labs-bike-light'
+    // this.removeFromCartTShirtBtn = '#remove-sauce-labs-bolt-t-shirt'
+    // this.cartBadge = '.shopping_cart_badge'
+    // this.backpackLink = '#item_4_title_link'
+    // this.bikeLightLink = '#item_0_title_link'
+    // this.tShirtLink = '#item_1_title_link'
+    // this.backpackPrice = `//div[text()='29.99']`
+
+
+
+    this.addToCartItemButton = (itemName) => `#add-to-cart-${itemName.toLowerCase().split(' ').join('-')}`
+    this.removeFromCartItemButton = (itemName) => `#remove-${itemName.toLowerCase().split(' ').join('-')}`
+    this.itemLink = (itemName) => `//div[text()='${itemName}']/ancestor-or-self::a`
+    this.itemPrice = (itemName) => `//div[text()='${itemName}']/ancestor::div[@class="inventory_item"]//div[@class="inventory_item_price"]`
+
   }
 
-  createAddToCartDict() {
-    return {
-      backpack: this.addToCartBackpackBtn,
-      'bike-light': this.addToCartBikeLightBtn,
-      't-shirt': this.addToCartTShirtBtn,
-    }
-  }
+  async clickOnProduct(itemName) {
 
-  createRemoveFromCartDict() {
-    return {
-      backpack: this.removeFromCartBackpackBtn,
-      'bike-light': this.removeFromCartBikeLightBtn,
-      't-shirt': this.removeFromCartTShirtBtn,
-    }
-  }
-  
-  createItemsDict() {
-    return {
-      backpack: this.backpackLink,
-      'bike-light': this.bikeLightLink,
-      't-shirt': this.tShirtLink,
-    }
-  }
-  async clickOnItem(itemName){
-    const itemsDict = this.createItemsDict()
-    await this.page.click(itemsDict[itemName])
+    await this.page.locator(this.itemLink(itemName)).click()
   }
 
   async addToCartItem(itemName) {
-    const addToCartDict = this.createAddToCartDict()
-    await this.page.click(addToCartDict[itemName])
+    await this.page.locator(this.addToCartItemButton(itemName)).click()
   }
 
   async removeFromCartItem(itemName) {
-    const removeFromCartDict = this.createRemoveFromCartDict()
-    await this.page.click(removeFromCartDict[itemName])
+    await this.page.locator(this.removeFromCartItemButton(itemName)).click()
   }
 
-  async clickCart() {
-    await this.page.click(this.cartButton)
+  async clickOnCart() {
+    this.header.clickOnCart()
   }
 
-  async getPrice(){  
-    return await this.page.locator(this.backpackPrice).textContent()
+  async getItemPrice(itemName) {
+    return await this.page.locator(this.itemPrice(itemName)).textContent()
+  }
+
+  getRemoveFromCartButton(itemName) {
+    return this.page.locator(this.removeFromCartItemButton(itemName))
   }
 }

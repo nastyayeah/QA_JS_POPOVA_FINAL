@@ -3,6 +3,7 @@ import PlaywrightDevPage from './base.page'
 export default class CheckoutPage extends PlaywrightDevPage {
   constructor(page) {
     super(page)
+    this.checkoutPageUrl = this.baseUrl + '/checkout-step-one.html'
     this.firstname = '#first-name'
     this.lastname = '#last-name'
     this.postalCode = '#postal-code'

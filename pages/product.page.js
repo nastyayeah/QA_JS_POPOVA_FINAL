@@ -1,29 +1,31 @@
 import PlaywrightDevPage from './base.page'
+import HeaderComponent from './components/header.component'
 
 export default class ProductPage extends PlaywrightDevPage {
   constructor(page) {
     super(page)
+    this.productPageUrl = this.baseUrl + '/inventory-item.html'
+    this.headerComponent = new HeaderComponent(page)
+
     this.itemName = `[data-test="inventory-item-name"]`
     this.itemPrice = `[data-test="inventory-item-price"]`
-    this.addToCartItemBtn = '#add-to-cart'
-    this.removeFromCartItemBtn = '#remove'
-    this.cartBadge = '.shopping_cart_badge'
-      this.cartButton = '.shopping_cart_link'
+    this.addToCartButton = '#add-to-cart'
+    this.removeFromCartButton = '#remove'
   }
 
   async addToCartItem() {
-    await this.page.click(this.addToCartItemBtn)
+    await this.page.locator(this.addToCartButton).click()
   }
 
   async removeFromCartItem() {
-    await this.page.click(this.removeFromCartItemBtn)
+    await this.page.locator(this.removeFromCartButton).click()
   }
 
-  async getPrice(){
-   return await this.page.locator(this.itemPrice).textContent()
-}
+  async getItemPrice() {
+    return await this.page.locator(this.itemPrice).textContent()
+  }
 
-async moveToCart(){
-    await this.page.locator(this.cartButton).click()
-}
+  async clickOnCart() {
+    await this.headerComponent.clickOnCart()
+  }
 }

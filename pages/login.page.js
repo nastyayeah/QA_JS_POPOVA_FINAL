@@ -3,6 +3,7 @@ import PlaywrightDevPage from './base.page'
 export default class LoginPage extends PlaywrightDevPage {
   constructor(page) {
     super(page)
+    this.loginPageUrl = this.baseUrl
     this.username = '#user-name'
     this.password = '#password'
     this.loginButton = '#login-button'

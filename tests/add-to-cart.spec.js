@@ -2,34 +2,47 @@ import { test, expect } from '@playwright/test'
 import LoginPage from '../pages/login.page'
 import HomePage from '../pages/home.page'
 import CartPage from '../pages/cart.page'
+import HeaderComponent from '../pages/components/header.component'
+import { itemsNamesDict } from '../fixtures/items-names'
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 test.beforeEach(async ({ page }) => {
   const loginPage = new LoginPage(page)
-  await loginPage.goToPage('https://www.saucedemo.com/')
-  await loginPage.loginUser('standard_user', 'secret_sauce')
+  await loginPage.goToPage(loginPage.loginPageUrl)
+  await loginPage.loginUser(process.env.TEST_VALID_USERNAME, process.env.TEST_PASSWORD)
 })
 
-test('Should add to cart backpack', async ({ page }) => {
+test('should add to cart 1 item', async ({ page }) => {
   const homePage = new HomePage(page)
   const cartPage = new CartPage(page)
-  await homePage.addToCartItem('backpack')
-  await expect(page.locator(homePage.cartBadge)).toHaveText('1')
-  await expect(page.locator(homePage.removeFromCartBackpackBtn)).toBeVisible()
-  await homePage.clickCart()
-  await expect(page).toHaveURL('https://www.saucedemo.com/cart.html')
-  await expect(page.locator(cartPage.addedToCartBackpack)).toBeVisible()
+  const headerComponent = new HeaderComponent(page)
+  await homePage.addToCartItem(itemsNamesDict.backpack)
+  expect(await headerComponent.getCartBadgeCount()).toBe('1')
+  await expect(homePage.getRemoveFromCartButton(itemsNamesDict.backpack)).toBeVisible()
+
+  await homePage.clickOnCart()
+  await expect(page).toHaveURL(cartPage.cartPageUrl)
+  await expect(cartPage.getItemLink(itemsNamesDict.backpack)).toBeVisible()
 })
 
-test('Should add to cart backpack, bike-light, t-shirt', async ({ page }) => {
+test('should add to cart more than 2 items', async ({ page }) => {
   const homePage = new HomePage(page)
   const cartPage = new CartPage(page)
-  await homePage.addToCartItem('backpack')
-  await homePage.addToCartItem('bike-light')
-  await homePage.addToCartItem('t-shirt')
-  await expect(page.locator(homePage.cartBadge)).toHaveText('3')
-  await homePage.clickCart()
-  await expect(page).toHaveURL('https://www.saucedemo.com/cart.html')
-  await expect(page.locator(cartPage.addedToCartBackpack)).toBeVisible()
-  await expect(page.locator(cartPage.addedToCartBikeLight)).toBeVisible()
-  await expect(page.locator(cartPage.addedToCartTShirt)).toBeVisible()
+  const headerComponent = new HeaderComponent(page)
+
+
+  await homePage.addToCartItem(itemsNamesDict.backpack)
+  await homePage.addToCartItem(itemsNamesDict.bike)
+  await homePage.addToCartItem(itemsNamesDict.tShirt)
+  expect(await headerComponent.getCartBadgeCount()).toBe('3')
+
+  await homePage.clickOnCart()
+  await expect(page).toHaveURL(cartPage.cartPageUrl)
+  await expect(cartPage.getItems()).toHaveCount(3)
+  await expect(cartPage.getItemLink(itemsNamesDict.backpack)).toBeVisible()
+  await expect(cartPage.getItemLink(itemsNamesDict.bike)).toBeVisible()
+  await expect(cartPage.getItemLink(itemsNamesDict.tShirt)).toBeVisible()
+
 })
