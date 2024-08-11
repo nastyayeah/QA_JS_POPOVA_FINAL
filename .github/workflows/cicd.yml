@@ -69,10 +69,14 @@ jobs:
           path: ./jest-html-report
     
       - name: Upload artifact UI tests
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./playwright-report   
 
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - name: Deploy to GitHub Pages UI tests
+        id: deployment-ui
+        uses: actions/deploy-pages@v2
+
+      - name: Deploy to GitHub Pages API tests
+        id: deployment-api
         uses: actions/deploy-pages@v1
