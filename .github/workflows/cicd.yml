@@ -26,6 +26,9 @@ jobs:
           cache: 'npm'
       - run: npm ci
 
+      - name: Installing browsers
+        run: npx playwright install 
+
       - name: Run test and generate report
         run: npm run test-ui && npm run test-api
 
