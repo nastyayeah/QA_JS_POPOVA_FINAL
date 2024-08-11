@@ -38,6 +38,12 @@ export async function getObjectsList() {
   return { status: response.status, data: response.data }
 }
 
+export async function getObjectsById(ids = []) {
+  const query = ids.map(id => `id=${id}`).join('&');
+  const response = await objectsApi.get(objectsApiEndpoints.getObjectsById(query))
+  return { status: response.status, data: response.data }
+}
+
 export async function getObject(Id) {
   const response = await objectsApi.get(
     objectsApiEndpoints.getSingleObjectById(Id)
