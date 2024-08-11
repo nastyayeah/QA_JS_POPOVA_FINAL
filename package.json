@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "playwright test"
+    "test-ui": "playwright test",
+    "test-api": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runTestsByPath api/tests/create-object.spec.js"
   },
   "author": "",
   "license": "ISC",
