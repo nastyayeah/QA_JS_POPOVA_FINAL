@@ -23,7 +23,7 @@ describe('Objects API endpoint: Get object', () => {
         expect(isResponseGetObjectsValid(response.data)).toBe(true)
     })
 
-    test('should get object by id', async () =>{
+    test('should get object by id', async () => {
         const response = await getObject("2")
         expect(response.status).toBe(200)
         expect(response.data.id).toBe('2')
@@ -31,10 +31,9 @@ describe('Objects API endpoint: Get object', () => {
         expect(isResponseGetObjectByIdValid(response.data)).toBe(true)
     })
 
-    test('should not get object with unexisted id', async () =>{
+    test('should not get object with unexisted id', async () => {
         const objId = '10002'
         const response = await getObject(objId)
-        console.log(response.data)
         expect(response.status).toBe(404)
         expect(response.data.error).toBe(`Oject with id=${objId} was not found.`)
     })
