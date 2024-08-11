@@ -7,20 +7,19 @@ describe('Objects API endpoints', () => {
   let objectId
 
   afterEach(async () => {
-    if (objectId){
-        await deleteObject(objectId)
-        objectId = null
+    if (objectId) {
+      await deleteObject(objectId)
+      objectId = null
     }
   })
   test('Should add new object', async () => {
     const requestBody = cloneDeep(createBodyRequest)
     const response = await addObject(requestBody)
-    console.log (response.data)
     objectId = response.data.id
     expect(response.status).toBe(200)
     expect(response.data.id).not.toBe(undefined)
   })
-  
+
   test('Should not add new object w/o data', async () => {
     const requestBody = ""
     const response = await addObject(requestBody)

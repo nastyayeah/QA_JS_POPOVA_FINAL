@@ -1,0 +1,82 @@
+name: CI with report
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.11.0
+          cache: 'npm'
+      - run: npm ci
+
+      - name: Installing browsers
+        run: npx playwright install 
+
+      - name: Run UI tests
+        run: npm run test-ui
+
+      - name: Run API tests
+        run: npm run test-api
+
+      - name: Upload report UI tests
+        uses: actions/upload-artifact@v3
+        with: 
+          name: report
+          if-no-files-found: error
+          path: ./playwright-report
+
+      - name: Upload report API tests
+        uses: actions/upload-artifact@v3
+        with: 
+          name: report
+          if-no-files-found: error
+          path: ./jest-html-report
+          
+      # - name: Send telegram message on push
+      #   uses: appleboy/telegram-action@master
+      #   with:
+      #     to: -4269860473 # -4269860473
+      #     token: ${{ secrets.TELEGRAM_BOT }}
+      #     photo: ./test.png
+      #     message: |
+      #       ${{ github.actor }} created commit new view:
+      #       Commit message: ${{ github.event.commits[0].message }}
+
+      #       Repository: ${{ github.repository }}
+
+      #       See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+
+      - name: Upload artifact API tests
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./jest-html-report
+    
+      - name: Upload artifact UI tests
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./playwright-report   
+
+      - name: Deploy to GitHub Pages UI tests
+        id: deployment-ui
+        uses: actions/deploy-pages@v2
+
+      - name: Deploy to GitHub Pages API tests
+        id: deployment-api
+        uses: actions/deploy-pages@v1
