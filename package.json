@@ -6,20 +6,39 @@
   "type": "module",
   "scripts": {
     "test-ui": "playwright test",
-    "test-api": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runTestsByPath api/tests/*.spec.js"
+    "test-api": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runTestsByPath api/tests/*.spec.js",
+    "allure:clean": "rm -rf allure-results-ui && rm -rf allure-results-api",
+    "allure:generate": "allure generate --clean -o allure-report",
+    "allure:report:ui": "npm run allure:clean && npm run test-ui && npm run allure:generate && npm run allure:open"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "reporters": [
+      "default",
+      [
+        "jest-html-reporters",
+        {
+          "publicPath": "./jest-html-report",
+          "filename": "index.html"
+        }
+      ]
+    ],
+    "testTimeout": 30000
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "playwright": "^1.45.3"
-  },
   "devDependencies": {
-    "@playwright/test": "^1.45.3",
+    "@playwright/test": "^1.46.0",
     "@types/node": "^20.14.11",
     "ajv": "^8.17.1",
+    "allure-commandline": "^2.30.0",
+    "allure-jest": "^3.0.0-beta.10",
+    "allure-playwright": "^3.0.0-beta.10",
     "axios": "^1.7.3",
     "dotenv": "^16.4.5",
     "jest": "^29.7.0",
-    "lodash": "^4.17.21"
+    "jest-html-reporters": "^3.1.7",
+    "lodash": "^4.17.21",
+    "playwright": "^1.46.0"
   }
 }
